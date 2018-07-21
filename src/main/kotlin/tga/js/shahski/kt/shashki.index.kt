@@ -8,38 +8,37 @@ import kotlin.browser.document
  * Created by grigory@clearscale.net on 7/14/2018.
  */
 
+var field = Field()
+
 fun main(args: Array<String>) {
     createHtmlField()
+    drawField()
 
+    var counter = 0
 
-    var field = Field()
-
-    drawField(field)
-
-    var counter = 0;
-    document.getElementById("btn")!!.addEventListener("click",{
+    document.getElementById("btn")!!.addEventListener("click", {
         counter++
-             if (counter == 1) step(field, "3b", "4c")
-        else if (counter == 2) step(field, "6c", "5b")
-        else if (counter == 3) step(field, "4e", "5d")
-        else if (counter == 4) step(field, "a1", "b2")
-
-        drawField(field)
-
+        when (counter) {
+            1 -> step("3b", "4c")
+            2 -> step("6c", "5b")
+            3 -> step("4e", "5d")
+            4 -> step("a1", "b2")
+        }
+        drawField()
     })
 
 }
 
 private fun step(from: String, to: String) {
     try {
-        move(from, to)
+        field = field.move(from, to)
         logStep(from, to)
-    } catch (e: Field.WrongStep) {
+    } catch (e: WrongStep) {
         logStep(from, to, e)
     }
 }
 
-private fun logStep(from: String, to: String, e: Field.WrongStep? = null) {
+private fun logStep(from: String, to: String, e: WrongStep? = null) {
     val li = document.create.li{
         +"$from -> $to ${e?.message ?: ""}"
     }
@@ -48,18 +47,17 @@ private fun logStep(from: String, to: String, e: Field.WrongStep? = null) {
 }
 
 
-
 fun createHtmlField() {
     val root = document.getElementById("root") ?: throw NullPointerException("Cannot find root element in html")
 
     val myDiv = document.create.table {
         classes += "simple"
 
-        for (l in 1..FIELD_SIZE+1) {
+        for (l in 1..Field.FIELD_SIZE+1) {
             tr{
                 if (l == 1) classes += "head"
 
-                for(c in 1..FIELD_SIZE+1) {
+                for(c in 1..Field.FIELD_SIZE+1) {
                     td{
                         if (c == 1 || l == 1) {
                             classes += "head"
@@ -87,12 +85,6 @@ fun createHtmlField() {
                                 else -> "light"
                             }
 
-/*
-                                if ((l+c)%2 == 1) {
-                                    if (l < 5) classes += "black"
-                                    if (l > 6) classes += "white"
-                                }
-*/
                         }
                     }
                 }
@@ -104,15 +96,13 @@ fun createHtmlField() {
 }
 
 
-
-fun drawField(field: Field) {
-    for(l in 0 until FIELD_SIZE) for (c in 0 until FIELD_SIZE) {
+fun drawField() {
+    for(l in 0 until Field.FIELD_SIZE) for (c in 0 until Field.FIELD_SIZE) {
         val cell = document.getElementById("c-$l-$c") ?: throw RuntimeException("no cell with id='c-$l-$c' found!")
-        when (field.state[l][c]) {
-            Field.EPMTY -> { cell.classList.remove("white"); cell.classList.remove("black") }
+        when (field.get(l,c)) {
+            Field.EMPTY -> { cell.classList.remove("white"); cell.classList.remove("black") }
             Field.BLACK -> { cell.classList.remove("white"); cell.classList.   add("black") }
             Field.WHITE -> { cell.classList.   add("white"); cell.classList.remove("black") }
         }
     }
-
 }
