@@ -1,4 +1,6 @@
-package tga.js.shahski.kt
+package tga.js.shahski.kt.bots
+
+import tga.js.shahski.kt.game.Field
 
 /**
  * Created by grigory@clearscale.net on 7/21/2018.
@@ -33,3 +35,13 @@ interface Bot {
 
 }
 
+data class Step(val color: Int, val step: StepAttempt, val result: Any?)
+
+/**
+ * Created by grigory@clearscale.net on 7/22/2018.
+ *
+ * first - from(lin, col)
+ * second - to(lin, col)
+ *
+ */
+typealias StepAttempt = Pair<Pair<Int, Int>, Pair<Int, Int>>

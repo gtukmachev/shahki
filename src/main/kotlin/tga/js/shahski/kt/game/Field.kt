@@ -1,5 +1,6 @@
-package tga.js.shahski.kt
+package tga.js.shahski.kt.game
 
+import tga.js.shahski.kt.WrongStep
 import kotlin.math.abs
 
 /**
@@ -18,7 +19,7 @@ data class Field(
         const val WHITE = 2
     }
 
-    constructor() : this( Array(FIELD_SIZE*FIELD_SIZE){0}) {
+    constructor() : this( Array(FIELD_SIZE * FIELD_SIZE){0}) {
 
         // initial figures position:
         for(l in 0 until FIELD_SIZE)
@@ -34,7 +35,7 @@ data class Field(
 
     fun get(l: Int, c: Int) = state[l * FIELD_SIZE + c]
 
-    fun move(color: Int, fromPosition: Pair<Int,Int>, toPosition: Pair<Int,Int>):Field {
+    fun move(color: Int, fromPosition: Pair<Int,Int>, toPosition: Pair<Int,Int>): Field {
         val (l,c) = fromPosition
 
         if ( (l+c)%2 != 1 ) throw WrongStep("The source position ($fromPosition) should be dark!")
@@ -59,7 +60,5 @@ data class Field(
         return this.copy(state = newState)
 
     }
-
-    //private fun decodeCoordinate(coordinate: String) = (coordinate[0] - '1') to (coordinate[1] - 'a')
 
 }

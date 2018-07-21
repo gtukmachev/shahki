@@ -1,9 +1,6 @@
 package tga.js.shahski.kt.bots
 
-import tga.js.shahski.kt.Bot
-import tga.js.shahski.kt.Field
-import tga.js.shahski.kt.Step
-import tga.js.shahski.kt.StepAttempt
+import tga.js.shahski.kt.game.Field
 
 /**
  * Created by grigory@clearscale.net on 7/22/2018.

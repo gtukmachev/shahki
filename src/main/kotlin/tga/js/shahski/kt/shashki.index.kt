@@ -2,77 +2,45 @@ package tga.js.shahski.kt
 
 import kotlinx.html.*
 import kotlinx.html.dom.create
-import tga.js.shahski.kt.bots.RandomBot
+import tga.js.shahski.kt.bots.StepAttempt
+import tga.js.shahski.kt.game.Field
+import tga.js.shahski.kt.game.Game
 import kotlin.browser.document
 
 /**
  * Created by grigory@clearscale.net on 7/14/2018.
  */
 
-var field = Field()
+val theGame = Game{color, step, e -> writeStepToList(color, step, e)}
 
 fun main(args: Array<String>) {
     createHtmlField()
     drawField()
 
 
-    val blackBot: Bot = RandomBot().apply { color = Field.BLACK }
-    val whiteBot:  Bot = RandomBot().apply { color = Field.WHITE }
-
-    var steps: List<Step> = listOf()
-    var history: List<Field> = listOf()
-
-    var currentBot = whiteBot
-    var nStep = 0
-    var nAttempt = 0
-
-
     document.getElementById("btn")!!.addEventListener("click", {
-
-        val theStepAttempt = currentBot.getStep(nStep, nAttempt, field, steps, history)
-
-        val result = doStep(currentBot.color, theStepAttempt.first, theStepAttempt.second)
-
-        if (result) {
-            if (currentBot == blackBot) nStep++
-            nAttempt = 0
-            currentBot = if (currentBot == whiteBot) blackBot else whiteBot
-            drawField()
-        } else {
-            nAttempt++
-
-        }
+        theGame.turn()
+        drawField()
     })
 
 }
 
-private fun doStep(color: Int, from: Pair<Int, Int>, to: Pair<Int, Int>): Boolean {
+private fun writeStepToList(color: Int, step: StepAttempt, e: WrongStep?): Unit {
 
-    fun logStep(e: WrongStep? = null) {
-        val clr = when(color){
-            Field.WHITE -> "WHITE"
-            Field.BLACK -> "BLACK"
-            else        -> "?????"
-        }
-
-        val li = document.create.li{
-            +"$clr : $from -> $to ${e?.message ?: ""}"
-        }
-
-        document.getElementById("log")!!.append(li)
+    val clr = when(color){
+        Field.WHITE -> "WHITE"
+        Field.BLACK -> "BLACK"
+        else        -> "?????"
     }
 
-    try {
-        field = field.move(color, from, to)
-        logStep()
-        return true
-    } catch (e: WrongStep) {
-        logStep(e)
+    val li = document.create.li{
+        +"$clr : ${encodeStep(step.first)} -> ${encodeStep(step.second)} ${e?.message ?: ""}"
     }
-    return false
 
+    document.getElementById("log")!!.append(li)
 }
 
+private fun encodeStep(step: Pair<Int,Int>) = ""+('1'+step.first)+('a'+step.second)
 
 fun createHtmlField() {
     val root = document.getElementById("root") ?: throw NullPointerException("Cannot find root element in html")
@@ -122,11 +90,10 @@ fun createHtmlField() {
 
 }
 
-
 fun drawField() {
     for(l in 0 until Field.FIELD_SIZE) for (c in 0 until Field.FIELD_SIZE) {
         val cell = document.getElementById("c-$l-$c") ?: throw RuntimeException("no cell with id='c-$l-$c' found!")
-        when (field.get(l,c)) {
+        when (theGame.field.get(l,c)) {
             Field.EMPTY -> { cell.classList.remove("white"); cell.classList.remove("black") }
             Field.BLACK -> { cell.classList.remove("white"); cell.classList.   add("black") }
             Field.WHITE -> { cell.classList.   add("white"); cell.classList.remove("black") }
