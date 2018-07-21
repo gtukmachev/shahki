@@ -2,6 +2,7 @@ package tga.js.shahski.kt
 
 import kotlinx.html.*
 import kotlinx.html.dom.create
+import tga.js.shahski.kt.bots.RandomBot
 import kotlin.browser.document
 
 /**
@@ -14,36 +15,62 @@ fun main(args: Array<String>) {
     createHtmlField()
     drawField()
 
-    var counter = 0
+
+    val blackBot: Bot = RandomBot().apply { color = Field.BLACK }
+    val whiteBot:  Bot = RandomBot().apply { color = Field.WHITE }
+
+    var steps: List<Step> = listOf()
+    var history: List<Field> = listOf()
+
+    var currentBot = whiteBot
+    var nStep = 0
+    var nAttempt = 0
+
 
     document.getElementById("btn")!!.addEventListener("click", {
-        counter++
-        when (counter) {
-            1 -> step("3b", "4c")
-            2 -> step("6c", "5b")
-            3 -> step("4e", "5d")
-            4 -> step("a1", "b2")
+
+        val theStepAttempt = currentBot.getStep(nStep, nAttempt, field, steps, history)
+
+        val result = doStep(currentBot.color, theStepAttempt.first, theStepAttempt.second)
+
+        if (result) {
+            if (currentBot == blackBot) nStep++
+            nAttempt = 0
+            currentBot = if (currentBot == whiteBot) blackBot else whiteBot
+            drawField()
+        } else {
+            nAttempt++
+
         }
-        drawField()
     })
 
 }
 
-private fun step(from: String, to: String) {
+private fun doStep(color: Int, from: Pair<Int, Int>, to: Pair<Int, Int>): Boolean {
+
+    fun logStep(e: WrongStep? = null) {
+        val clr = when(color){
+            Field.WHITE -> "WHITE"
+            Field.BLACK -> "BLACK"
+            else        -> "?????"
+        }
+
+        val li = document.create.li{
+            +"$clr : $from -> $to ${e?.message ?: ""}"
+        }
+
+        document.getElementById("log")!!.append(li)
+    }
+
     try {
-        field = field.move(from, to)
-        logStep(from, to)
+        field = field.move(color, from, to)
+        logStep()
+        return true
     } catch (e: WrongStep) {
-        logStep(from, to, e)
+        logStep(e)
     }
-}
+    return false
 
-private fun logStep(from: String, to: String, e: WrongStep? = null) {
-    val li = document.create.li{
-        +"$from -> $to ${e?.message ?: ""}"
-    }
-
-    document.getElementById("log")!!.append(li)
 }
 
 

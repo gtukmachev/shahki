@@ -10,8 +10,12 @@ interface Bot {
      * game will call this method before start and pass to the bot his color.
      *
      * @param color - possible values are: Field.WHITE oR Field.BLACK
+     *
+     * @return this
      */
-    fun initiate(color: Int)
+    //fun initiate(color: Int): Bot
+
+    var color: Int
 
     /**
      *

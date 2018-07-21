@@ -25,8 +25,8 @@ data class Field(
             for (c in 0 until FIELD_SIZE)
                 state[l* FIELD_SIZE + c] =
                         if ((l+c)%2 == 1 ) when (l) {
-                            0,1,2 -> BLACK
-                            7,6,5 -> WHITE
+                            0,1,2 -> WHITE
+                            7,6,5 -> BLACK
                             else -> EMPTY
                         }
                         else 0
@@ -34,20 +34,22 @@ data class Field(
 
     fun get(l: Int, c: Int) = state[l * FIELD_SIZE + c]
 
-    fun move(from: String, to: String):Field {
-        val (l,c) = decodeCoordinate(from)
+    fun move(color: Int, fromPosition: Pair<Int,Int>, toPosition: Pair<Int,Int>):Field {
+        val (l,c) = fromPosition
 
-        if ( (l+c)%2 != 1 ) throw WrongStep("The source position ($from) should be dark!")
+        if ( (l+c)%2 != 1 ) throw WrongStep("The source position ($fromPosition) should be dark!")
+
+        if (get(l,c) != color) throw WrongStep("The source position ($fromPosition) should contains your stone!")
 
         val color = this.get(l,c)
-        if (color == 0) throw WrongStep("No chess on the source place: $from!");
+        if (color == 0) throw WrongStep("No chess on the source place: $fromPosition!")
 
-        val (lTo,cTo) = decodeCoordinate(to)
-        if ( (lTo+cTo)%2 != 1 ) throw WrongStep("The target position ($from) should be dark!")
+        val (lTo,cTo) = toPosition
+        if ( (lTo+cTo)%2 != 1 ) throw WrongStep("The target position ($fromPosition) should be dark!")
         val colorTo = this.get(lTo,cTo)
-        if (colorTo != 0) throw WrongStep("The target place is not empty: $to!");
+        if (colorTo != 0) throw WrongStep("The target place is not empty: $toPosition!");
 
-        if ( abs(l-lTo) != 1 || abs(c-cTo) != 1 ) throw WrongStep("The step [$from -> $to] is too long!");
+        if ( abs(l-lTo) != 1 || abs(c-cTo) != 1 ) throw WrongStep("The step [$fromPosition -> $toPosition] is too long!");
 
         val newState = state.copyOf()
 
@@ -58,6 +60,6 @@ data class Field(
 
     }
 
-    private fun decodeCoordinate(coordinate: String) = (coordinate[0] - '1') to (coordinate[1] - 'a')
+    //private fun decodeCoordinate(coordinate: String) = (coordinate[0] - '1') to (coordinate[1] - 'a')
 
 }
