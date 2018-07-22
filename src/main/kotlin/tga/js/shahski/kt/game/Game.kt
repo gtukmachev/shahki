@@ -5,10 +5,7 @@ import tga.js.shahski.kt.bots.Bot
 import tga.js.shahski.kt.bots.RandomBot
 import tga.js.shahski.kt.bots.MoviesHistoryItem
 
-/**
- * Created by grigory@clearscale.net on 7/22/2018.
- */
-class Game(private val loggingCallback: (color: Int, step: Moves, e: WrongStep?) -> Unit ) {
+class Game(private val loggingCallback: (MoviesHistoryItem) -> Unit ) {
 
     var field = Field()
 
@@ -24,14 +21,18 @@ class Game(private val loggingCallback: (color: Int, step: Moves, e: WrongStep?)
 
 
     fun turn() {
-        val movies = currentBot.getMoves(nStep, nAttempt, field, moviesHistory, fieldHistory)
 
+        val movies = currentBot.getMoves(nStep, nAttempt, field, moviesHistory, fieldHistory)
         val result = doStep(currentBot.color, movies)
 
-        moviesHistory += MoviesHistoryItem(currentBot.color, nStep, movies, result)
+        val historyItem = MoviesHistoryItem(currentBot.color, nStep, nAttempt, movies, result)
+
+        try { loggingCallback(historyItem) } catch (e: Throwable) {}
+
+        moviesHistory += historyItem
         fieldHistory += field
 
-        if (result) { // if the step is successful
+        if (result == null) { // if the step is successful
 
             if (currentBot == blackBot) nStep++
             nAttempt = 0
@@ -43,19 +44,14 @@ class Game(private val loggingCallback: (color: Int, step: Moves, e: WrongStep?)
         }
     }
 
-    private fun doStep(color: Int, movies: Moves): Boolean {
-
-        fun logStep(e: WrongStep? = null) { loggingCallback(color, movies, e) }
-
-        try {
-            field = field.move(color, movies)
-            logStep()
-            return true
-        } catch (e: WrongStep) {
-            logStep(e)
-        }
-        return false
-
+    private fun doStep(color: Int, movies: Moves): WrongStep? = try {
+        field = field.move(color, movies)
+        null
+    } catch (e: WrongStep) {
+        e
     }
+
+
+
 
 }

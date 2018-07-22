@@ -20,10 +20,12 @@ class RandomBot: Bot {
         return when(color) {
             Field.WHITE -> when(nStep){
                 0 -> listOf((2 to 1), (3 to 2))
+                1 -> listOf((1 to 2), (2 to 1))
                 else -> listOf((2 to 1), (3 to 2))
             }
             Field.BLACK -> when(nStep){
                 0 -> listOf((5 to 2), (4 to 1))
+                1 -> listOf((6 to 3), (5 to 2))
                 else -> listOf((5 to 2), (4 to 1))
             }
             else -> throw RuntimeException("Unknown color!")

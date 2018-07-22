@@ -2,6 +2,7 @@ package tga.js.shahski.kt
 
 import kotlinx.html.*
 import kotlinx.html.dom.create
+import tga.js.shahski.kt.bots.MoviesHistoryItem
 import tga.js.shahski.kt.game.Field
 import tga.js.shahski.kt.game.Game
 import tga.js.shahski.kt.game.Moves
@@ -11,33 +12,38 @@ import kotlin.browser.document
  * Created by grigory@clearscale.net on 7/14/2018.
  */
 
-val theGame = Game{color, step, e -> writeStepToList(color, step, e)}
+val theGame = Game{ moviesHistoryItem -> writeStepToList(moviesHistoryItem) }
 
 fun main(args: Array<String>) {
     createHtmlField()
     drawGameFieldState()
 
 
-    document.getElementById("btn")!!.addEventListener("click", {
+    val btn = document.getElementById("btn") ?: throw NullPointerException("no 'btn' element found")
+    btn.addEventListener("click", {
         theGame.turn()
         drawGameFieldState()
     })
 
 }
 
-private fun writeStepToList(color: Int, moves: Moves, e: WrongStep?) {
+private fun writeStepToList(hi: MoviesHistoryItem) {
 
-    val clr = when(color){
-        Field.WHITE -> "WHITE"
-        Field.BLACK -> "BLACK"
+    val err = hi.result.apply { " :: " + this } ?: ""
+    val mv = hi.moves.joinToString(" -> "){ encodeStep(it) }
+    val att = if (hi.nAttempt == 0) "" else "(${hi.nAttempt})"
+
+    val li = document.create.li{
+        +"${hi.nStep}. $att $mv $err"
+    }
+
+    val clr = when(hi.color){
+        Field.WHITE -> "white"
+        Field.BLACK -> "black"
         else        -> "?????"
     }
 
-    val li = document.create.li{
-        +"$clr : ${encodeStep(moves[0])} -> ${encodeStep(moves[1])} ${e?.message ?: ""}"
-    }
-
-    document.getElementById("log")!!.append(li)
+    document.getElementById("log-$clr")!!.append(li)
 }
 
 private fun encodeStep(step: Pair<Int,Int>) = ""+('1'+step.first)+('a'+step.second)

@@ -30,5 +30,5 @@ interface Bot {
 }
 
 
-data class MoviesHistoryItem(val color: Int, val nStep: Int, val moves: Moves, val result: Any?)
+data class MoviesHistoryItem(val color: Int, val nStep: Int, val nAttempt: Int, val moves: Moves, val result: Any?)
 
