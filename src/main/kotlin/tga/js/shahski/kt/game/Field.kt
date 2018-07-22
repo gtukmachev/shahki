@@ -50,7 +50,7 @@ data class Field(
         val colorTo = this.get(lTo,cTo)
         if (colorTo != 0) throw WrongStep("The target place is not empty: $toPosition!");
 
-        if ( abs(l-lTo) != 1 || abs(c-cTo) != 1 ) throw WrongStep("The step [$fromPosition -> $toPosition] is too long!");
+        if ( abs(l-lTo) != 1 || abs(c-cTo) != 1 ) throw WrongStep("The moves [$fromPosition -> $toPosition] is too long!");
 
         val newState = state.copyOf()
 

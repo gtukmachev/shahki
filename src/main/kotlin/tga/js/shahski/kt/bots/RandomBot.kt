@@ -13,7 +13,7 @@ class RandomBot: Bot {
         get() = colorVal
         set(value) {colorVal = value}
 
-    override fun getStep(nStep: Int, nAttempt: Int, field: Field, steps: List<Step>, history: List<Field>): StepAttempt {
+    override fun getMoves(nStep: Int, nAttempt: Int, field: Field, stepsHistory: List<MoviesHistoryItem>, fieldsHistory: List<Field>): Moves {
 
         return when(color) {
             Field.WHITE -> when(nStep){
