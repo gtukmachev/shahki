@@ -15,12 +15,12 @@ val theGame = Game{color, step, e -> writeStepToList(color, step, e)}
 
 fun main(args: Array<String>) {
     createHtmlField()
-    drawField()
+    drawGameFieldState()
 
 
     document.getElementById("btn")!!.addEventListener("click", {
         theGame.turn()
-        drawField()
+        drawGameFieldState()
     })
 
 }
@@ -90,7 +90,7 @@ fun createHtmlField() {
 
 }
 
-fun drawField() {
+fun drawGameFieldState() {
     for(l in 0 until Field.FIELD_SIZE) for (c in 0 until Field.FIELD_SIZE) {
         val cell = document.getElementById("c-$l-$c") ?: throw RuntimeException("no cell with id='c-$l-$c' found!")
         when (theGame.field.get(l,c)) {
