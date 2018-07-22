@@ -2,9 +2,9 @@ package tga.js.shahski.kt
 
 import kotlinx.html.*
 import kotlinx.html.dom.create
-import tga.js.shahski.kt.bots.Moves
 import tga.js.shahski.kt.game.Field
 import tga.js.shahski.kt.game.Game
+import tga.js.shahski.kt.game.Moves
 import kotlin.browser.document
 
 /**
@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
 
 }
 
-private fun writeStepToList(color: Int, step: Moves, e: WrongStep?): Unit {
+private fun writeStepToList(color: Int, moves: Moves, e: WrongStep?) {
 
     val clr = when(color){
         Field.WHITE -> "WHITE"
@@ -34,7 +34,7 @@ private fun writeStepToList(color: Int, step: Moves, e: WrongStep?): Unit {
     }
 
     val li = document.create.li{
-        +"$clr : ${encodeStep(step.first)} -> ${encodeStep(step.second)} ${e?.message ?: ""}"
+        +"$clr : ${encodeStep(moves[0])} -> ${encodeStep(moves[1])} ${e?.message ?: ""}"
     }
 
     document.getElementById("log")!!.append(li)

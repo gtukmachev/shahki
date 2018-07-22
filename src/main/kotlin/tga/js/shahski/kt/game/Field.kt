@@ -3,11 +3,6 @@ package tga.js.shahski.kt.game
 import tga.js.shahski.kt.WrongStep
 import kotlin.math.abs
 
-/**
- * Created by grigory@clearscale.net on 7/21/2018.
- */
-
-
 data class Field(
         private val state: Array<Int>
 ) {
@@ -35,22 +30,25 @@ data class Field(
 
     fun get(l: Int, c: Int) = state[l * FIELD_SIZE + c]
 
-    fun move(color: Int, fromPosition: Pair<Int,Int>, toPosition: Pair<Int,Int>): Field {
+    fun move(color: Int, moves: Moves): Field {
+        val fromPosition = moves[0]
+        val toPosition = moves[1]
+
         val (l,c) = fromPosition
 
         if ( (l+c)%2 != 1 ) throw WrongStep("The source position ($fromPosition) should be dark!")
 
         if (get(l,c) != color) throw WrongStep("The source position ($fromPosition) should contains your stone!")
 
-        val color = this.get(l,c)
-        if (color == 0) throw WrongStep("No chess on the source place: $fromPosition!")
+
+        if (this.get(l,c) == 0) throw WrongStep("No chess on the source place: $fromPosition!")
 
         val (lTo,cTo) = toPosition
         if ( (lTo+cTo)%2 != 1 ) throw WrongStep("The target position ($fromPosition) should be dark!")
         val colorTo = this.get(lTo,cTo)
-        if (colorTo != 0) throw WrongStep("The target place is not empty: $toPosition!");
+        if (colorTo != 0) throw WrongStep("The target place is not empty: $toPosition!")
 
-        if ( abs(l-lTo) != 1 || abs(c-cTo) != 1 ) throw WrongStep("The moves [$fromPosition -> $toPosition] is too long!");
+        if ( abs(l-lTo) != 1 || abs(c-cTo) != 1 ) throw WrongStep("The moves [$fromPosition -> $toPosition] is too long!")
 
         val newState = state.copyOf()
 
@@ -62,3 +60,12 @@ data class Field(
     }
 
 }
+
+/**
+ * Created by grigory@clearscale.net on 7/22/2018.
+ *
+ * first = line
+ * second = column
+ *
+ */
+typealias Moves = List<Pair<Int, Int>>

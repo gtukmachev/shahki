@@ -1,6 +1,7 @@
 package tga.js.shahski.kt.bots
 
 import tga.js.shahski.kt.game.Field
+import tga.js.shahski.kt.game.Moves
 
 /**
  * Created by grigory@clearscale.net on 7/21/2018.
@@ -28,13 +29,6 @@ interface Bot {
 
 }
 
-data class MoviesHistoryItem(val color: Int, val moves: Moves, val result: Any?)
 
-/**
- * Created by grigory@clearscale.net on 7/22/2018.
- *
- * first = line
- * second = column
- *
- */
-typealias Moves = List<Pair<Int, Int>>
+data class MoviesHistoryItem(val color: Int, val nStep: Int, val moves: Moves, val result: Any?)
+
