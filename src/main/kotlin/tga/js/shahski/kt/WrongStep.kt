@@ -1,3 +1,3 @@
 package tga.js.shahski.kt
 
-class WrongStep(msg: String): RuntimeException(msg)
+class WrongStep(i: Int, msg: String): RuntimeException("$msg [step $i]")

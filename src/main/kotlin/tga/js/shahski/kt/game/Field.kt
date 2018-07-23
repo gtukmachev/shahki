@@ -29,34 +29,74 @@ data class Field(
     }
 
     fun get(l: Int, c: Int) = state[l * FIELD_SIZE + c]
+    //fun set(l: Int, c: Int, value: Int) {state[l * FIELD_SIZE + c] = value}
+
+    private fun Array<Int>.set(p: Pair<Int,Int>, value: Int) { this[p.first * FIELD_SIZE + p.second] = value }
+
+
+    private fun Pair<Int,Int>.isOnField() = first >= 0 && second >= 0 && first < FIELD_SIZE && second < FIELD_SIZE
+    private fun Pair<Int,Int>.isDarkCell() = (first + second) % 2 == 1
+    private fun Pair<Int,Int>.color() = get(first, second)
+    private infix fun Pair<Int,Int>.isOnDiagonal(that: Pair<Int,Int>) = abs(this.first - that.first) == abs(this.second - that.second)
+    private infix fun Pair<Int,Int>.isNotOnDiagonal(that: Pair<Int,Int>) = !(this isOnDiagonal that)
+    private fun Pair<Int,Int>.distance(that: Pair<Int,Int>) = abs(that.first - this.first)
+    private fun Pair<Int,Int>.linesDelta(that: Pair<Int,Int>) = that.first - this.first
+
+
+    private fun checkStartPosition(color: Int, p: Pair<Int, Int>) {
+        if (!p.isOnField()) throw WrongStep(0, "The start position ($p) should be INSIDE the field!")
+        if (!p.isDarkCell()) throw WrongStep(0, "The start position ($p) should be dark!")
+        if (p.color() != color) throw WrongStep(0, "The source position ($p) should contains your stone!")
+    }
 
     fun move(color: Int, moves: Moves): Field {
-        val fromPosition = moves[0]
-        val toPosition = moves[1]
+        if(moves.size < 2) throw WrongStep(0, "moves chain should contains at least 2 positions: start and finish.")
 
-        val (l,c) = fromPosition
+        checkStartPosition(color, moves[0])
 
-        if ( (l+c)%2 != 1 ) throw WrongStep("The source position ($fromPosition) should be dark!")
+        return when( detectStepType(moves[0], moves[1]) ) {
+            MoveType.MOVE -> doOneMove(color, moves)
+            MoveType.SHOT -> doShots(color, moves)
+                     else -> throw WrongStep(1, "Unacceptable move to 1:${moves[1]}")
+        }
 
-        if (get(l,c) != color) throw WrongStep("The source position ($fromPosition) should contains your stone!")
+    }
+
+    private fun doOneMove(color: Int, moves: Moves): Field {
+
+        if (!moves[1].isOnField())               throw WrongStep(1, "The start position (${moves[1]}) should be INSIDE the field!")
+        if ( moves[0] isNotOnDiagonal moves[1] ) throw WrongStep(1, "Target cell (${moves[1]}) not on a diagonal")
+        if ( moves[0].distance(moves[1]) != 1 )  throw WrongStep(1, "Target cell (${moves[1]}) should be near the start position (${moves[0]})")
+        if ( moves[1].color() != 0 ) throw WrongStep(1, "Target cell (${moves[1]}) is not empty")
+
+        val requiredLinesDelta = when(color){
+            WHITE ->  1
+            BLACK -> -1
+             else -> throw WrongStep(1, "Unrecognized color")
+        }
+
+        if ( moves[0].linesDelta(moves[1]) != requiredLinesDelta ) throw WrongStep(1, "The moving should be in forward direction only")
+
+        return this.copy(state = state.copyOf().apply {
+            set(moves[0], 0)
+            set(moves[1], color)
+        })
 
 
-        if (this.get(l,c) == 0) throw WrongStep("No chess on the source place: $fromPosition!")
+    }
 
-        val (lTo,cTo) = toPosition
-        if ( (lTo+cTo)%2 != 1 ) throw WrongStep("The target position ($fromPosition) should be dark!")
-        val colorTo = this.get(lTo,cTo)
-        if (colorTo != 0) throw WrongStep("The target place is not empty: $toPosition!")
+    private fun doShots(color: Int, moves: Moves): Field {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-        if ( abs(l-lTo) != 1 || abs(c-cTo) != 1 ) throw WrongStep("The moves [$fromPosition -> $toPosition] is too long!")
+    private fun detectStepType(from: Pair<Int, Int>, to: Pair<Int, Int>): MoveType {
+        val (lf, cf) = from
+        val (lt, ct) = to
 
-        val newState = state.copyOf()
+        if ( abs(lt-lf) == 1 && abs(ct-cf) == 1 ) return MoveType.MOVE
+        if ( abs(lt-lf) == 2 && abs(ct-cf) == 2 ) return MoveType.SHOT
 
-        newState[l * FIELD_SIZE + c] = 0
-        newState[lTo * FIELD_SIZE + cTo] = color
-
-        return this.copy(state = newState)
-
+        return MoveType.UNKNOWN
     }
 
 }
@@ -69,3 +109,5 @@ data class Field(
  *
  */
 typealias Moves = List<Pair<Int, Int>>
+
+enum class MoveType{ MOVE, SHOT, UNKNOWN}
