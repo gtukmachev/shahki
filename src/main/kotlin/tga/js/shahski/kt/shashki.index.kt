@@ -2,6 +2,7 @@ package tga.js.shahski.kt
 
 import kotlinx.html.*
 import kotlinx.html.dom.create
+import org.w3c.dom.HTMLInputElement
 import tga.js.shahski.kt.bots.MoviesHistoryItem
 import tga.js.shahski.kt.game.Field
 import tga.js.shahski.kt.game.Game
@@ -18,9 +19,18 @@ fun main(args: Array<String>) {
     createHtmlField()
     drawGameFieldState()
 
+    val lin1Input = "lin1".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
+    val col1Input = "col1".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
+    val lin2Input = "lin2".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
+    val col2Input = "col2".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
+
 
     val btn = document.getElementById("btn") ?: throw NullPointerException("no 'btn' element found")
     btn.addEventListener("click", {
+        theGame.force( listOf(
+                lin1Input.value.toInt() to col1Input.value.toInt(),
+                lin2Input.value.toInt() to col2Input.value.toInt()
+        ))
         theGame.turn()
         drawGameFieldState()
     })

@@ -57,7 +57,7 @@ data class Field(
         return when( detectStepType(moves[0], moves[1]) ) {
             MoveType.MOVE -> doOneMove(color, moves)
             MoveType.SHOT -> doShots(color, moves)
-                     else -> throw WrongStep(1, "Unacceptable move to 1:${moves[1]}")
+                     else -> throw WrongStep(1, "Unacceptable move to 1:${moves[1]} - the move type unrecognized")
         }
 
     }

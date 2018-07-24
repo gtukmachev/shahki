@@ -27,6 +27,8 @@ interface Bot {
      */
     fun getMoves(nStep: Int, nAttempt: Int, field: Field, stepsHistory: List<MoviesHistoryItem>, fieldsHistory: List<Field>): Moves
 
+    fun force(moves: Moves)
+
 }
 
 

@@ -20,6 +20,10 @@ class Game(private val loggingCallback: (MoviesHistoryItem) -> Unit ) {
     var nAttempt = 0
 
 
+    fun force(moves: Moves){
+        currentBot.force(moves)
+    }
+
     fun turn() {
 
         val movies = currentBot.getMoves(nStep, nAttempt, field, moviesHistory, fieldHistory)

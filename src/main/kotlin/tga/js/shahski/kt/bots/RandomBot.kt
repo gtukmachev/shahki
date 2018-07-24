@@ -9,13 +9,27 @@ import tga.js.shahski.kt.game.Moves
 class RandomBot: Bot {
 
     private var colorVal: Int = -1
+    private var focedMoves: Moves? = null
 
     override var color: Int
         get() = colorVal
         set(value) {colorVal = value}
 
+
+
+    override fun force(moves: Moves) {
+        focedMoves = moves
+        println(moves)
+    }
+
     override fun getMoves(nStep: Int, nAttempt: Int, field: Field, stepsHistory: List<MoviesHistoryItem>,
                           fieldsHistory: List<Field>): Moves {
+
+        if (focedMoves != null) {
+            val m = focedMoves!!
+            focedMoves = null
+            return m
+        }
 
         return when(color) {
             Field.WHITE -> when(nStep){
