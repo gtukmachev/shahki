@@ -55,7 +55,7 @@ data class Field(
 
         checkStartPosition(color, moves[0])
 
-        return when( detectStepType(moves[0], moves[1]) ) {
+        return when( detectStepType(moves) ) {
             MoveType.MOVE -> doOneMove(color, moves)
             MoveType.SHOT -> doShots(color, moves)
                      else -> throw WrongStep(1, "Unacceptable move to 1:${moves[1]} - the move type unrecognized")
@@ -93,7 +93,7 @@ data class Field(
         fun doOneShot(i: Int) {
             if (!moves[i].isOnField())               throw WrongStep(i, "The start position ${moves[i]} should be INSIDE the field!")
             if ( moves[i-1] isNotOnDiagonal moves[i] ) throw WrongStep(i, "Target cell ${moves[i]} not on a diagonal")
-            if ( moves[i-1].distance(moves[i]) != 2 )  throw WrongStep(i, "Target cell ${moves[i]} should be on distance in 2 diagonal cells from the last one ${moves[i-1]}")
+            if ( moves[i-1].distance(moves[i]) != 2 )  throw WrongStep(i, "To make a shot - target cell ${moves[i]} should be on distance in 2 diagonal cells from the last one ${moves[i-1]}")
             if ( moves[i].color(mutableState) != 0 ) throw WrongStep(i, "Target cell ${moves[i]} is not empty")
 
             val between = (moves[i] + moves[i-1]) / 2
@@ -112,12 +112,15 @@ data class Field(
     }
 
 
-    private fun detectStepType(from: Pair<Int, Int>, to: Pair<Int, Int>): MoveType {
-        val (lf, cf) = from
-        val (lt, ct) = to
+    private fun detectStepType(moves: Moves): MoveType {
+        if (moves.size < 2) return MoveType.UNKNOWN
+        if (moves.size >= 3) return MoveType.SHOT
 
-        if ( abs(lt-lf) == 1 && abs(ct-cf) == 1 ) return MoveType.MOVE
-        if ( abs(lt-lf) == 2 && abs(ct-cf) == 2 ) return MoveType.SHOT
+        val (lin0, col0) = moves[0]
+        val (lin1, col1) = moves[1]
+
+        if ( abs(lin1-lin0) == 1 && abs(col1-col0) == 1 ) return MoveType.MOVE
+        if ( abs(lin1-lin0) == 2 && abs(col1-col0) == 2 ) return MoveType.SHOT
 
         return MoveType.UNKNOWN
     }
