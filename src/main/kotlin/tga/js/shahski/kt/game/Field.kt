@@ -87,31 +87,30 @@ data class Field(
     }
 
     private fun doShots(color: Int, moves: Moves): Field {
+
         val mutableState = state.copyOf()
 
-        for (i in 1 until moves.size)
-            doOneShot(color, moves, i, mutableState)
+        fun doOneShot(i: Int) {
+            if (!moves[i].isOnField())               throw WrongStep(i, "The start position ${moves[i]} should be INSIDE the field!")
+            if ( moves[i-1] isNotOnDiagonal moves[i] ) throw WrongStep(i, "Target cell ${moves[i]} not on a diagonal")
+            if ( moves[i-1].distance(moves[i]) != 2 )  throw WrongStep(i, "Target cell ${moves[i]} should be on distance in 2 diagonal cells from the last one ${moves[i-1]}")
+            if ( moves[i].color(mutableState) != 0 ) throw WrongStep(i, "Target cell ${moves[i]} is not empty")
+
+            val between = (moves[i] + moves[i-1]) / 2
+            val enemyColor = if (color == WHITE) BLACK else WHITE
+            if ( between.color(mutableState) != enemyColor ) throw WrongStep(i, "to make the shot ${moves[i-1]} -> ${moves[i]} it should be an enemy stone ib the position $between")
+
+            mutableState.set(moves[i-1], EMPTY)
+            mutableState.set(between, EMPTY)
+            mutableState.set(moves[i], color)
+
+        }
+
+        for (i in 1 until moves.size) { doOneShot(i) }
 
         return this.copy(state = mutableState)
     }
 
-    private fun doOneShot(color: Int, moves: Moves, i: Int, mutableState: Array<Int>) {
-        if (!moves[i].isOnField())               throw WrongStep(i, "The start position ${moves[i]} should be INSIDE the field!")
-        if ( moves[i-1] isNotOnDiagonal moves[i] ) throw WrongStep(i, "Target cell ${moves[i]} not on a diagonal")
-        if ( moves[i-1].distance(moves[i]) != 2 )  throw WrongStep(i, "Target cell ${moves[i]} should be on distance in 2 diagonal cells from the last one ${moves[i-1]}")
-        if ( moves[i].color(mutableState) != 0 ) throw WrongStep(i, "Target cell ${moves[i]} is not empty")
-
-        val between = (moves[i] + moves[i-1]) / 2
-        println("$i> ${moves[i-1]} - $between - ${moves[i]}")
-        val enemyColor= if (color == WHITE) BLACK else WHITE
-
-        if ( between.color(mutableState) != enemyColor ) throw WrongStep(i, "to make the shot ${moves[i-1]} -> ${moves[i]} it should be an enemy stone ib the position $between")
-
-        mutableState.set(moves[i-1], EMPTY)
-        mutableState.set(between, EMPTY)
-        mutableState.set(moves[i], color)
-
-    }
 
     private fun detectStepType(from: Pair<Int, Int>, to: Pair<Int, Int>): MoveType {
         val (lf, cf) = from
