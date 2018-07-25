@@ -9,9 +9,10 @@ data class Field(
 
     companion object {
         const val FIELD_SIZE = 8
-        const val EMPTY = 0
-        const val BLACK = 1
-        const val WHITE = 2
+        const val EMPTY = 0b0000
+        const val BLACK = 0b0010
+        const val WHITE = 0b0100
+        const val QUIN  = 0b0001
     }
 
     constructor() : this( Array(FIELD_SIZE * FIELD_SIZE){0}) {
@@ -28,7 +29,7 @@ data class Field(
                         else 0
     }
 
-    fun getColor(l: Int, c: Int) = state[l * FIELD_SIZE + c]
+    fun getColor(l: Int, c: Int) = (state[l * FIELD_SIZE + c] shr 1) shl 1
 
     private fun Array<Int>.set(p: Pair<Int,Int>, value: Int) { this[p.first * FIELD_SIZE + p.second] = value }
 
