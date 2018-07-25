@@ -36,46 +36,41 @@
         .simple td.dark {
             background: burlywood;
         }
+        .simple td.light.choosen {
+            background: #ffffa8;
+        }
+        .simple td.dark.choosen {
+            background: #de9555;
+        }
         .simple td.black {
-            background-image: url('black.png');
+            background-image: url('black.png') !important;
             background-size: contain;
 
         }
         .simple td.white {
-            background-image: url('white.png');
+            background-image: url('white.png') !important;
             background-size: contain;
         }
+
+        .simple td.black.choosen {
+            background-image: url('black.png') !important;
+            background-size: contain;
+
+        }
+        .simple td.white.choosen {
+            background-image: url('white.png') !important;
+            background-size: contain;
+        }
+
     </style>
 </head>
 <body>
 
     <div id="root"></div>
-    <br>
-    <div>
-        <label for="lin1">from: <input type="number" id="lin1"/></label> <input type="number" id="col1"/>
-    </div>
-    <div>
-        <label for="lin2">to: <input type="number" id="lin2"/></label> <input type="number" id="col2"/>
-    </div>
-    <br><button id="btn">step</button>
 
     <table id="logTable" border="1">
-        <tr>
-            <td>
-                <h3>white</h3>
-            </td>
-            <td>
-                <h3>black</h3>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <ul id="log-white"></ul>
-            </td>
-            <td>
-                <ul id="log-black"></ul>
-            </td>
-        </tr>
+        <tr> <td><h3>white</h3></td>           <td><h3>black</h3></td>           </tr>
+        <tr> <td><ul id="log-white"></ul></td> <td><ul id="log-black"></ul></td></tr>
     </table>
 
     <script src="target/js/lib/kotlin.js"></script>

@@ -2,7 +2,7 @@ package tga.js.shahski.kt
 
 import kotlinx.html.*
 import kotlinx.html.dom.create
-import org.w3c.dom.HTMLInputElement
+import kotlinx.html.js.onClickFunction
 import tga.js.shahski.kt.bots.MoviesHistoryItem
 import tga.js.shahski.kt.game.Field
 import tga.js.shahski.kt.game.Game
@@ -14,27 +14,11 @@ import kotlin.browser.document
  */
 
 val theGame = Game{ moviesHistoryItem -> writeStepToList(moviesHistoryItem) }
+var manualMoves: Moves = listOf()
 
 fun main(args: Array<String>) {
     createHtmlField()
     drawGameFieldState()
-
-    val lin1Input = "lin1".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
-    val col1Input = "col1".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
-    val lin2Input = "lin2".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
-    val col2Input = "col2".let{ document.getElementById(it) ?: throw NullPointerException("no '$it' element found") } as HTMLInputElement
-
-
-    val btn = document.getElementById("btn") ?: throw NullPointerException("no 'btn' element found")
-    btn.addEventListener("click", {
-        theGame.force( listOf(
-                lin1Input.value.toInt() to col1Input.value.toInt(),
-                lin2Input.value.toInt() to col2Input.value.toInt()
-        ))
-        theGame.turn()
-        drawGameFieldState()
-    })
-
 }
 
 private fun writeStepToList(hi: MoviesHistoryItem) {
@@ -95,6 +79,19 @@ fun createHtmlField() {
                                 1 -> "dark"
                                 else -> "light"
                             }
+                            onClickFunction = {
+                                manualMoves += (l-2) to (c-2)
+                                if(manualMoves.size == 2) {
+                                    val m = manualMoves
+                                    manualMoves = listOf()
+                                    theGame.force(m)
+                                    theGame.turn()
+                                }
+
+                                drawGameFieldState()
+                                println("manualMoves = $manualMoves")
+
+                            }
 
                         }
                     }
@@ -107,12 +104,21 @@ fun createHtmlField() {
 }
 
 fun drawGameFieldState() {
+
     for(l in 0 until Field.FIELD_SIZE) for (c in 0 until Field.FIELD_SIZE) {
         val cell = document.getElementById("c-$l-$c") ?: throw RuntimeException("no cell with id='c-$l-$c' found!")
+
         when (theGame.field.get(l,c)) {
             Field.EMPTY -> { cell.classList.remove("white"); cell.classList.remove("black") }
             Field.BLACK -> { cell.classList.remove("white"); cell.classList.   add("black") }
             Field.WHITE -> { cell.classList.   add("white"); cell.classList.remove("black") }
         }
+
+        if ( manualMoves.contains(l to c) ) {
+            cell.classList.add("choosen")
+        } else {
+            cell.classList.remove("choosen")
+        }
     }
+
 }

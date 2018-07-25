@@ -19,7 +19,6 @@ class RandomBot: Bot {
 
     override fun force(moves: Moves) {
         focedMoves = moves
-        println(moves)
     }
 
     override fun getMoves(nStep: Int, nAttempt: Int, field: Field, stepsHistory: List<MoviesHistoryItem>,

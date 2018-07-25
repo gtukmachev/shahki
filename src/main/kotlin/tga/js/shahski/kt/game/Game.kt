@@ -27,6 +27,8 @@ class Game(private val loggingCallback: (MoviesHistoryItem) -> Unit ) {
     fun turn() {
 
         val movies = currentBot.getMoves(nStep, nAttempt, field, moviesHistory, fieldHistory)
+        println(movies)
+
         val result = doStep(currentBot.color, movies)
 
         val historyItem = MoviesHistoryItem(currentBot.color, nStep, nAttempt, movies, result)
