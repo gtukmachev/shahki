@@ -28,19 +28,20 @@ data class Field(
                         else 0
     }
 
-    fun get(l: Int, c: Int) = state[l * FIELD_SIZE + c]
-    //fun set(l: Int, c: Int, value: Int) {state[l * FIELD_SIZE + c] = value}
+    fun getColor(l: Int, c: Int) = state[l * FIELD_SIZE + c]
 
     private fun Array<Int>.set(p: Pair<Int,Int>, value: Int) { this[p.first * FIELD_SIZE + p.second] = value }
 
-
     private fun Pair<Int,Int>.isOnField() = first >= 0 && second >= 0 && first < FIELD_SIZE && second < FIELD_SIZE
     private fun Pair<Int,Int>.isDarkCell() = (first + second) % 2 == 1
-    private fun Pair<Int,Int>.color() = get(first, second)
+    private fun Pair<Int,Int>.color(st: Array<Int>) = st[first * FIELD_SIZE + second]
+    private fun Pair<Int,Int>.color() = this.color(state)
     private infix fun Pair<Int,Int>.isOnDiagonal(that: Pair<Int,Int>) = abs(this.first - that.first) == abs(this.second - that.second)
     private infix fun Pair<Int,Int>.isNotOnDiagonal(that: Pair<Int,Int>) = !(this isOnDiagonal that)
     private fun Pair<Int,Int>.distance(that: Pair<Int,Int>) = abs(that.first - this.first)
     private fun Pair<Int,Int>.linesDelta(that: Pair<Int,Int>) = that.first - this.first
+    private operator fun Pair<Int,Int>.plus(that: Pair<Int,Int>) = (that.first + this.first) to (that.second + this.second)
+    private operator fun Pair<Int,Int>.div(n :Int) = (this.first / n) to (this.second / n)
 
 
     private fun checkStartPosition(color: Int, p: Pair<Int, Int>) {
@@ -86,7 +87,30 @@ data class Field(
     }
 
     private fun doShots(color: Int, moves: Moves): Field {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val mutableState = state.copyOf()
+
+        for (i in 1 until moves.size)
+            doOneShot(color, moves, i, mutableState)
+
+        return this.copy(state = mutableState)
+    }
+
+    private fun doOneShot(color: Int, moves: Moves, i: Int, mutableState: Array<Int>) {
+        if (!moves[i].isOnField())               throw WrongStep(i, "The start position ${moves[i]} should be INSIDE the field!")
+        if ( moves[i-1] isNotOnDiagonal moves[i] ) throw WrongStep(i, "Target cell ${moves[i]} not on a diagonal")
+        if ( moves[i-1].distance(moves[i]) != 2 )  throw WrongStep(i, "Target cell ${moves[i]} should be on distance in 2 diagonal cells from the last one ${moves[i-1]}")
+        if ( moves[i].color(mutableState) != 0 ) throw WrongStep(i, "Target cell ${moves[i]} is not empty")
+
+        val between = (moves[i] + moves[i-1]) / 2
+        println("$i> ${moves[i-1]} - $between - ${moves[i]}")
+        val enemyColor= if (color == WHITE) BLACK else WHITE
+
+        if ( between.color(mutableState) != enemyColor ) throw WrongStep(i, "to make the shot ${moves[i-1]} -> ${moves[i]} it should be an enemy stone ib the position $between")
+
+        mutableState.set(moves[i-1], EMPTY)
+        mutableState.set(between, EMPTY)
+        mutableState.set(moves[i], color)
+
     }
 
     private fun detectStepType(from: Pair<Int, Int>, to: Pair<Int, Int>): MoveType {

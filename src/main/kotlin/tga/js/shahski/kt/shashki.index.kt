@@ -100,7 +100,7 @@ fun drawGameFieldState() {
     for(l in 0 until Field.FIELD_SIZE) for (c in 0 until Field.FIELD_SIZE) {
         val cell = document.getElementById("c-$l-$c") ?: throw RuntimeException("no cell with id='c-$l-$c' found!")
 
-        when (theGame.field.get(l,c)) {
+        when (theGame.field.getColor(l,c)) {
             Field.EMPTY -> { cell.classList.remove("white"); cell.classList.remove("black") }
             Field.BLACK -> { cell.classList.remove("white"); cell.classList.   add("black") }
             Field.WHITE -> { cell.classList.   add("white"); cell.classList.remove("black") }
