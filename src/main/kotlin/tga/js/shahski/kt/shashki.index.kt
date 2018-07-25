@@ -80,17 +80,19 @@ fun createHtmlField() {
                                 else -> "light"
                             }
                             onClickFunction = {
-                                manualMoves += (l-2) to (c-2)
-                                if(manualMoves.size == 2) {
+                                val cell = (l-2) to (c-2)
+                                if (manualMoves.isNotEmpty() && manualMoves.last() == cell ) {
                                     val m = manualMoves
                                     manualMoves = listOf()
                                     theGame.force(m)
                                     theGame.turn()
+
+                                } else {
+                                    manualMoves += cell
                                 }
+                                println(manualMoves)
 
                                 drawGameFieldState()
-                                println("manualMoves = $manualMoves")
-
                             }
 
                         }
