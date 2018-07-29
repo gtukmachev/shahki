@@ -22,14 +22,15 @@ data class Field(
             for (c in 0 until FIELD_SIZE)
                 state[l* FIELD_SIZE + c] =
                         if ((l+c)%2 == 1 ) when (l) {
-                            0,1,2 -> WHITE
-                            7,6,5 -> BLACK
+                            0,1,2 -> (WHITE + QUINN)
+                            7,6,5 -> (BLACK + QUINN)
                             else -> EMPTY
                         }
                         else 0
     }
 
     fun getColor(l: Int, c: Int) = (state[l * FIELD_SIZE + c] shr 1) shl 1
+    fun getStone(l: Int, c: Int) = state[l * FIELD_SIZE + c]
 
     private fun Array<Int>.set(p: Pair<Int,Int>, value: Int) { this[p.first * FIELD_SIZE + p.second] = value }
 

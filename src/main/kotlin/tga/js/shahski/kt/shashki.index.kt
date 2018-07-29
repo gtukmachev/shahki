@@ -84,6 +84,9 @@ fun createHtmlField() {
 
                                 drawGameFieldState()
                             }
+                            div {
+                                id = "s-${l-2}-${c-2}"
+                            }
 
                         }
                     }
@@ -98,14 +101,21 @@ fun createHtmlField() {
 fun drawGameFieldState() {
 
     for(l in 0 until Field.FIELD_SIZE) for (c in 0 until Field.FIELD_SIZE) {
-        val cell = document.getElementById("c-$l-$c") ?: throw RuntimeException("no cell with id='c-$l-$c' found!")
+        val stone = "s-$l-$c".let{ document.getElementById(it) ?: throw RuntimeException("no <div> with id='$it' found!") }
 
-        when ( theGame.field.getColor(l,c) ) {
-            Field.EMPTY -> { cell.classList.remove("white"); cell.classList.remove("black") }
-            Field.BLACK -> { cell.classList.remove("white"); cell.classList.   add("black") }
-            Field.WHITE -> { cell.classList.   add("white"); cell.classList.remove("black") }
+        stone.classList.remove("white")
+        stone.classList.remove("black")
+        stone.classList.remove("white-quinn")
+        stone.classList.remove("black-quinn")
+
+        when ( theGame.field.getStone(l,c) ) {
+            Field.WHITE + Field.QUINN  -> { stone.classList.add("white-quinn") }
+            Field.BLACK + Field.QUINN  -> { stone.classList.add("black-quinn") }
+            Field.WHITE -> { stone.classList.add("white") }
+            Field.BLACK -> { stone.classList.add("black") }
         }
 
+        val cell = "c-$l-$c".let{ document.getElementById(it) ?: throw RuntimeException("no <td> with id='$it' found!") }
         if ( manualMoves.contains(l to c) ) {
             cell.classList.add("choosen")
         } else {
