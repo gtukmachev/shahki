@@ -22,8 +22,8 @@ data class Field(
             for (c in 0 until FIELD_SIZE)
                 state[l* FIELD_SIZE + c] =
                         if ((l+c)%2 == 1 ) when (l) {
-                            0,1,2 -> (WHITE + QUINN)
-                            7,6,5 -> (BLACK + QUINN)
+                            0,1,2 -> WHITE
+                            7,6,5 -> BLACK
                             else -> EMPTY
                         }
                         else 0
@@ -31,6 +31,26 @@ data class Field(
 
     fun getColor(l: Int, c: Int) = (state[l * FIELD_SIZE + c] shr 1) shl 1
     fun getStone(l: Int, c: Int) = state[l * FIELD_SIZE + c]
+
+    private fun Array<Int>.moveTo(pFrom: Pair<Int,Int>, pTo: Pair<Int,Int>) = this.apply {
+        val v = pFrom.stone(this)
+        this.set(pFrom, Field.EMPTY)
+        this.set(pTo, v)
+    }
+
+    private fun Array<Int>.transformToQuinnIfAny(p: Pair<Int,Int>) = this.apply {
+        if (p.first == 0 || p.first == (FIELD_SIZE-1)) {
+            val stone = p.stone(this)
+            if (stone and QUINN == 0) {
+                when (stone) {
+                    WHITE -> if (p.first == (Field.FIELD_SIZE-1)) this.set(p, WHITE + QUINN )
+                    BLACK -> if (p.first == 0                   ) this.set(p, BLACK + QUINN )
+                }
+
+            }
+        }
+    }
+
 
     private fun Array<Int>.set(p: Pair<Int,Int>, value: Int) { this[p.first * FIELD_SIZE + p.second] = value }
 
@@ -92,10 +112,10 @@ data class Field(
 
         if ( moves[0].linesDelta(moves[1]) != requiredLinesDelta ) throw WrongStep(1, "The moving should be in forward direction only")
 
-        return this.copy(state = state.copyOf().apply {
-            set(moves[0], 0)
-            set(moves[1], color)
-        })
+        return this.copy(state = state.copyOf()
+                .moveTo(moves[0], moves[1])
+                .transformToQuinnIfAny(moves[1])
+        )
 
     }
 
@@ -117,9 +137,9 @@ data class Field(
 
             if ( between.color(mutableState) != enemyColor ) throw WrongStep(i, "to make the shot ${moves[i-1]} -> ${moves[i].en()} it should be an enemy stone ib the position $between")
 
-            mutableState.set(moves[i-1], EMPTY)
+            mutableState.moveTo(moves[i-1], moves[i])
+            mutableState.transformToQuinnIfAny(moves[i])
             mutableState.set(between, EMPTY)
-            mutableState.set(moves[i], color)
 
         }
 
@@ -159,12 +179,11 @@ data class Field(
                 p += direction
             }
 
-            val myStone = moves[i-1].stone(mutableState)
-            mutableState.set(moves[i-1], EMPTY)
+
+            mutableState.moveTo(moves[i-1], moves[i])
             enemyPosition?.let{
                 mutableState.set(it, EMPTY)
             }
-            mutableState.set(moves[i], myStone)
 
         }
 
