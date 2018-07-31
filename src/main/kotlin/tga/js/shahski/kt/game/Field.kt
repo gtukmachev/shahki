@@ -79,18 +79,79 @@ data class Field(
         if (p.color() != color) throw WrongStep(0, "The start position ${p.en()} should contains your stone!")
     }
 
-    fun move(color: Int, moves: Moves): Field {
-        if(moves.size < 2) throw WrongStep(0, "moves chain should contains at least 2 positions: start and finish.")
+    interface NewFieldResponse { val field: Field }
+    open class MoveResponse
+        data class  Done(override val field: Field)                  : MoveResponse(), NewFieldResponse
+        data class   Win(override val field: Field)                  : MoveResponse(), NewFieldResponse
+        data class Loose(override val field: Field, val reason: Any) : MoveResponse(), NewFieldResponse
+        data class   Err(val exception: WrongStep)          : MoveResponse()
 
-        checkStartPosition(color, moves[0])
+    fun move(color: Int, moves: Moves): MoveResponse {
+        if(moves.size < 2) Err(WrongStep(0, "moves chain should contains at least 2 positions: start and finish."))
 
-        return when( detectStepType(moves) ) {
-            MoveType.MOVE  -> doOneMove(color, moves)
-            MoveType.SHOT  -> doShots(color, moves)
-            MoveType.QUINN -> doQuinnMoves(color, moves)
-                     else -> throw WrongStep(1, "Unacceptable move to 1:${moves[1].en()} - the move type unrecognized")
+        if (noMovesAvailable(color)) return Loose(this, "no more moves available")
+
+        try {
+
+            checkStartPosition(color, moves[0])
+
+            val newField = when( detectStepType(moves) ) {
+                MoveType.MOVE  -> doOneMove(color, moves)
+                MoveType.SHOT  -> doShots(color, moves)
+                MoveType.QUINN -> doQuinnMoves(color, moves)
+                else -> throw WrongStep(1, "Unacceptable move to 1:${moves[1].en()} - the move type unrecognized")
+            }
+
+
+            return when (newField.isNoMoreEnemy(color)){
+                true -> Win(newField)
+                false -> Done(newField)
+            }
+
+        } catch (e: WrongStep) {
+            return Err(e)
+        }
+    }
+
+    private fun enemyColor(color: Int) = if (color == WHITE) BLACK else WHITE
+
+    fun noMovesAvailable(color: Int): Boolean {
+
+        val direction = if (color == WHITE) 1 else -1
+
+        fun canMove(p: Pair<Int, Int>): Boolean {
+            ifTheOneMoveError(p, p + (direction to 1)) ?: return true
+            ifTheOneMoveError(p, p + (direction to -1)) ?: return true
+            // todo add checks for other possible moves:
+            // todo: a shot
+            // todo: a quin move
+            return false
         }
 
+        for (l in 0 until FIELD_SIZE) {
+            for (c in 0 until FIELD_SIZE) {
+                val p = l to c
+                if (p.color() == color) {
+                    if (canMove(p)) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+
+    private fun isNoMoreEnemy(color: Int) = enemyColor(color).let {
+        enemyColor -> !(state.any { it and enemyColor > 0 })
+    }
+
+    private fun ifTheOneMoveError(s: Pair<Int, Int>, d: Pair<Int, Int>): String? = when {
+        !d.isOnField()      -> "The start position (${d.en()}) should be INSIDE the field!"
+        d isNotOnDiagonal s -> "Target cell (${d.en()}) not on a diagonal"
+        d distanceTo s != 1 -> "Target cell (${d.en()}) should be near the start position (${s.en()})"
+        d.stone() != EMPTY  -> "Target cell (${d.en()}) is not empty"
+        else -> null
     }
 
     /**
@@ -99,10 +160,10 @@ data class Field(
     private fun doOneMove(color: Int, moves: Moves): Field {
 
         if (moves.size != 2)                     throw WrongStep(2, "A simple step should contains only one move!")
-        if (!moves[1].isOnField())               throw WrongStep(1, "The start position (${moves[1].en()}) should be INSIDE the field!")
-        if ( moves[0] isNotOnDiagonal moves[1] ) throw WrongStep(1, "Target cell (${moves[1].en()}) not on a diagonal")
-        if ( moves[0].distance(moves[1]) != 1 )  throw WrongStep(1, "Target cell (${moves[1].en()}) should be near the start position (${moves[0].en()})")
-        if ( moves[1].stone() != EMPTY )         throw WrongStep(1, "Target cell (${moves[1].en()}) is not empty")
+
+        ifTheOneMoveError( moves[0], moves[1] )?.let{
+            throw WrongStep(1, it)
+        }
 
         val requiredLinesDelta = when(color){
             WHITE ->  1

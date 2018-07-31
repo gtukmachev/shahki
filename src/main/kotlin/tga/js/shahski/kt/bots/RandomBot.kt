@@ -16,6 +16,13 @@ class RandomBot: Bot {
         set(value) {colorVal = value}
 
 
+    override fun win(field: Field, stepsHistory: List<MoviesHistoryItem>, fieldsHistory: List<Field>) {
+        println("$color: I'm win :-)))) !")
+    }
+
+    override fun loose(field: Field, stepsHistory: List<MoviesHistoryItem>, fieldsHistory: List<Field>) {
+        println("$color: I'm loose ;-(")
+    }
 
     override fun force(moves: Moves) {
         focedMoves = moves

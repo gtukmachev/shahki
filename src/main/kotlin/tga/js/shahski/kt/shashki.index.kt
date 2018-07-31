@@ -13,7 +13,7 @@ import kotlin.browser.document
  * Created by grigory@clearscale.net on 7/14/2018.
  */
 
-val theGame = Game{ moviesHistoryItem -> writeStepToList(moviesHistoryItem) }
+val theGame = Game(3){ moviesHistoryItem -> writeStepToList(moviesHistoryItem) }
 var manualMoves: Moves = listOf()
 
 fun main(args: Array<String>) {
