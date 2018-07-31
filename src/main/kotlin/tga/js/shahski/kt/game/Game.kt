@@ -76,12 +76,12 @@ class Game(
                     currentBot = if (currentBot == whiteBot) blackBot else whiteBot
                 }
             is Field.Win -> {
-                    status = "{currentBot.color} Win!"
+                    status = "Bot ${currentBot.color} Win!"
                     currentBot.win(field, moviesHistory, fieldHistory)
                     otherBot.loose(field, moviesHistory, fieldHistory)
                 }
             is Field.Loose -> {
-                    status = "{currentBot.color} Loose!"
+                    status = "Bot ${currentBot.color} Loose!"
                     currentBot.loose(field, moviesHistory, fieldHistory)
                     otherBot.win(field, moviesHistory, fieldHistory)
                 }

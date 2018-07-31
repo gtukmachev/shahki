@@ -13,6 +13,8 @@ data class Field(
         const val BLACK = 0b0010
         const val WHITE = 0b0100
         const val QUINN = 0b0001
+
+        val aroundDirections = listOf((1 to 1), (1 to -1), (-1 to 1), (-1 to 1))
     }
 
     constructor() : this( Array(FIELD_SIZE * FIELD_SIZE){0}) {
@@ -40,11 +42,14 @@ data class Field(
 
     private fun Array<Int>.transformToQuinnIfAny(p: Pair<Int,Int>) = this.apply {
         if (p.first == 0 || p.first == (FIELD_SIZE-1)) {
-            val stone = p.stone(this)
-            if (stone and QUINN == 0) {
-                when (stone) {
-                    WHITE -> if (p.first == (Field.FIELD_SIZE-1)) this.set(p, WHITE + QUINN )
-                    BLACK -> if (p.first == 0                   ) this.set(p, BLACK + QUINN )
+            if (!p.isQuinn()) {
+                val stone = p.stone(this)
+                if (
+                        (stone == WHITE && p.first == (Field.FIELD_SIZE-1))
+                        ||
+                        (stone == BLACK && p.first == 0)
+                ) {
+                    this.set(p, stone + QUINN )
                 }
 
             }
@@ -59,6 +64,7 @@ data class Field(
 
     private          fun Pair<Int,Int>.stone(st: Array<Int>) = st[first * FIELD_SIZE + second]
     private          fun Pair<Int,Int>.stone() = this.stone(state)
+    private          fun Pair<Int,Int>.isQuinn() = (this.stone(state) and QUINN) > 0
 
     private          fun Pair<Int,Int>.color(st: Array<Int>) = (st[first * FIELD_SIZE + second] shr 1) shl 1
     private          fun Pair<Int,Int>.color() = this.color(state)
@@ -118,13 +124,36 @@ data class Field(
     fun noMovesAvailable(color: Int): Boolean {
 
         val direction = if (color == WHITE) 1 else -1
+        val enemy = enemyColor(color)
 
         fun canMove(p: Pair<Int, Int>): Boolean {
-            ifTheOneMoveError(p, p + (direction to 1)) ?: return true
+            ifTheOneMoveError(p, p + (direction to 1 )) ?: return true
             ifTheOneMoveError(p, p + (direction to -1)) ?: return true
-            // todo add checks for other possible moves:
-            // todo: a shot
-            // todo: a quin move
+
+            aroundDirections.forEach {
+                ifTheOneShotError(p, p + it, state, enemy) ?: return true
+            }
+
+            if (p.isQuinn()) {
+                var result : Boolean? = null
+                aroundDirections.forEach {
+                    var nextP = p + it
+                    var enemyCounter = 0
+                    while ( nextP.isOnField() && result == null ) {
+                        when (nextP.color()) {
+                            EMPTY -> result = true
+                            color -> result = false
+                            enemy -> when(enemyCounter) {
+                                   0 -> enemyCounter++
+                                else -> result = false
+                            }
+                        }
+                        nextP += it
+                    }
+                    result ?: return result!!
+                }
+            }
+
             return false
         }
 
@@ -180,27 +209,35 @@ data class Field(
 
     }
 
+    private fun ifTheOneShotError(s: Pair<Int, Int>, d: Pair<Int, Int>, theState: Array<Int>, enemyColor: Int ): String? = when {
+        d.isOnField()              -> "The target position ${d.en()} should be INSIDE the field!"
+        d isNotOnDiagonal s        -> "Target cell ${d.en()} not on a diagonal of the source one ${s.en()}"
+        s distanceTo d != 2        -> "To make a shot - target cell ${d.en()} should be on the distance in 2 diagonal cells from the last one ${s.en()}"
+        d.stone(theState) != EMPTY -> "Target cell ${d.en()} is not empty"
+        else -> ((d + s) / 2).let{ between -> when {
+            between.color(theState) != enemyColor -> "to make the shot ${s.en()} -> ${d.en()} it should be an enemy stone ib the position ${between.en()}"
+                                             else -> null
+        }}
+    }
+
     /**
      * The function handles a shot-step (or chain of 'shots') by a simple stone (not a quinn)
      */
     private fun doShots(color: Int, moves: Moves): Field {
 
         val mutableState = state.copyOf()
+        val enemy = enemyColor(color)
 
         fun doOneShot(i: Int) {
-            if (!moves[i].isOnField())               throw WrongStep(i, "The target position ${moves[i].en()} should be INSIDE the field!")
-            if ( moves[i-1] isNotOnDiagonal moves[i] ) throw WrongStep(i, "Target cell ${moves[i].en()} not on a diagonal")
-            if ( moves[i-1].distance(moves[i]) != 2 )  throw WrongStep(i, "To make a shot - target cell ${moves[i].en()} should be on distance in 2 diagonal cells from the last one ${moves[i-1]}")
-            if ( moves[i].stone(mutableState) != EMPTY ) throw WrongStep(i, "Target cell ${moves[i].en()} is not empty")
 
-            val between = (moves[i] + moves[i-1]) / 2
-            val enemyColor = if (color == WHITE) BLACK else WHITE
+            ifTheOneShotError(moves[i-1], moves[i], mutableState, enemy)?.let{
+                throw WrongStep(i, it)
+            }
 
-            if ( between.color(mutableState) != enemyColor ) throw WrongStep(i, "to make the shot ${moves[i-1]} -> ${moves[i].en()} it should be an enemy stone ib the position $between")
 
             mutableState.moveTo(moves[i-1], moves[i])
             mutableState.transformToQuinnIfAny(moves[i])
-            mutableState.set(between, EMPTY)
+            mutableState.set((moves[i-1] + moves[i]) / 2, EMPTY) // set 0 into position between [i-1] and [i]
 
         }
 
@@ -262,14 +299,14 @@ data class Field(
         if (moves[0] isNotOnDiagonal moves[1]) throw WrongStep(1, "you can move your stone ${moves[0].en()} only in a diagonal direction, but not in the position ${moves[1].en()}")
 
 
-        return when(moves[0].stone() and QUINN){
-            QUINN -> MoveType.QUINN
-             else ->
-                     when(moves[0] distanceTo moves[1]){
-                            1 -> MoveType.MOVE
-                            2 -> MoveType.SHOT
-                         else -> MoveType.UNKNOWN
-                     }
+        return when(moves[0].isQuinn()){
+            true -> MoveType.QUINN
+            else ->
+                 when(moves[0] distanceTo moves[1]){
+                        1 -> MoveType.MOVE
+                        2 -> MoveType.SHOT
+                     else -> MoveType.UNKNOWN
+                 }
         }
 
     }
