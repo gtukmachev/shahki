@@ -74,7 +74,7 @@ fun createHtmlField() {
                                 if (manualMoves.isNotEmpty() && manualMoves.last() == cell ) {
                                     val m = manualMoves
                                     manualMoves = listOf()
-                                    theGame.force(m)
+                                    theGame.currentBot.force(m)
                                     theGame.turn()
 
                                 } else {

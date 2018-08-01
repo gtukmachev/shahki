@@ -26,10 +26,6 @@ class Game(
     var nAttempt = 0
 
 
-    fun force(moves: Moves){
-        currentBot.force(moves)
-    }
-
     fun turn() {
 
         if (status != "in progress") throw RuntimeException("The game status should be 'in progress' but it is '$status'!")
