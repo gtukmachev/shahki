@@ -1,6 +1,5 @@
 package tga.shashki.ui_console
 
-import com.sun.scenario.effect.Color4f.BLACK
 import tga.shashki.core.bots.MoviesHistoryItem
 import tga.shashki.core.game.Field
 import tga.shashki.core.game.Game
@@ -45,15 +44,22 @@ fun convertCommandToMoves(command: String): Moves = command.split(" ").map {
 
 fun printGame(game: Game) {
 
+    print("  ")
+    for (c in 0 until Field.FIELD_SIZE ) {
+        print("  ${c+1} ")
+    }
+    println("")
+
 
     for (l in 0 until Field.FIELD_SIZE ) {
 
 
-        println("+---".repeat(Field.FIELD_SIZE) + "+")
+        println("  " + ("+---".repeat(Field.FIELD_SIZE)) + "+")
+        print("${l+1} ")
+
         for (c in 0 until Field.FIELD_SIZE) {
 
             val st = game.field.getStone(l,c)
-
             when {
                 (st and Field.BLACK and Field.QUINN) > 0 -> print("|(*)")
                 (st and Field.BLACK                ) > 0 -> print("| * ")
@@ -65,8 +71,9 @@ fun printGame(game: Game) {
         }
         println("|")
     }
-    println("+---".repeat(Field.FIELD_SIZE) + "+")
+    println("  " + ("+---".repeat(Field.FIELD_SIZE)) + "+")
 
+    print(game.status)
 }
 
 fun readCommand(): String {
