@@ -4,84 +4,51 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>tga.kotlin.js</groupId>
+    <groupId>tga.shashki</groupId>
     <artifactId>shashki</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>core</module>
+        <module>server</module>
+        <module>ui-application</module>
+    </modules>
 
     <properties>
         <kotlin.version>1.2.51</kotlin.version>
-        <kotlinx.html.version>0.6.10</kotlinx.html.version>
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
     </properties>
 
     <dependencies>
-        <dependency> <artifactId>kotlin-stdlib-js</artifactId> <groupId>org.jetbrains.kotlin</groupId> <version>${kotlin.version}</version> </dependency>
-        <dependency> <artifactId>kotlinx-html-js</artifactId> <groupId>org.jetbrains.kotlinx</groupId> <version>${kotlinx.html.version}</version> </dependency>
+        <dependency> <artifactId>kotlin-stdlib</artifactId> <groupId>org.jetbrains.kotlin</groupId> <version>${kotlin.version}</version> </dependency>
+        <dependency> <artifactId>kotlin-test</artifactId>   <groupId>org.jetbrains.kotlin</groupId> <version>${kotlin.version}</version> </dependency>
+        <dependency> <artifactId>kotlin-test-junit</artifactId>   <groupId>org.jetbrains.kotlin</groupId> <version>${kotlin.version}</version> </dependency>
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
-        <plugins>
+        <sourceDirectory>${project.basedir}/src/tga.shashki.ui_app.main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
+        <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
+
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>js</goal>
-                        </goals>
+                        <goals> <goal>compile</goal> </goals>
                     </execution>
+
                     <execution>
                         <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-js</goal>
-                        </goals>
-                    </execution>
-                </executions>
-<!--
-                <configuration>
-                    <moduleKind>amd</moduleKind>
-                    <sourceMap>true</sourceMap>
-                </configuration>
--->
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.jetbrains.kotlin</groupId>
-                                    <artifactId>kotlin-stdlib-js</artifactId>
-                                    <version>${kotlin.version}</version>
-                                    <outputDirectory>${project.build.directory}/js/lib</outputDirectory>
-                                    <includes>*.js</includes>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.jetbrains.kotlinx</groupId>
-                                    <artifactId>kotlinx-html-js</artifactId>
-                                    <version>${kotlinx.html.version}</version>
-                                    <outputDirectory>${project.build.directory}/js/lib</outputDirectory>
-                                    <includes>*.js</includes>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
+                        <goals> <goal>test-compile</goal> </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
+
     </build>
 
     <repositories>

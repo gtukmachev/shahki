@@ -1,8 +1,8 @@
-package tga.js.shahski.kt.game
+package tga.shashki.core.game
 
-import tga.js.shahski.kt.bots.Bot
-import tga.js.shahski.kt.bots.RandomBot
-import tga.js.shahski.kt.bots.MoviesHistoryItem
+import tga.shashki.core.bots.Bot
+import tga.shashki.core.bots.RandomBot
+import tga.shashki.core.bots.MoviesHistoryItem
 
 class Game(
         private val maxAttempts: Int,

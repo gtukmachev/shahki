@@ -1,7 +1,7 @@
-package tga.js.shahski.kt.bots
+package tga.shashki.core.bots
 
-import tga.js.shahski.kt.game.Field
-import tga.js.shahski.kt.game.Moves
+import tga.shashki.core.game.Field
+import tga.shashki.core.game.Moves
 
 /**
  * Created by grigory@clearscale.net on 7/22/2018.

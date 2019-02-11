@@ -1,19 +1,19 @@
-package tga.js.shahski.kt
+package tga.shashki.ui_app
 
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
-import tga.js.shahski.kt.bots.MoviesHistoryItem
-import tga.js.shahski.kt.game.Field
-import tga.js.shahski.kt.game.Game
-import tga.js.shahski.kt.game.Moves
+import tga.shashki.core.bots.MoviesHistoryItem
+import tga.shashki.core.game.Field
+import tga.shashki.core.game.Game
+import tga.shashki.core.game.Moves
 import kotlin.browser.document
 
 /**
  * Created by grigory@clearscale.net on 7/14/2018.
  */
 
-val theGame = Game(3){ moviesHistoryItem -> writeStepToList(moviesHistoryItem) }
+val theGame = Game(3) { moviesHistoryItem -> writeStepToList(moviesHistoryItem) }
 var manualMoves: Moves = listOf()
 
 fun main(args: Array<String>) {

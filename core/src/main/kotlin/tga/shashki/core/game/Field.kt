@@ -1,6 +1,6 @@
-package tga.js.shahski.kt.game
+package tga.shashki.core.game
 
-import tga.js.shahski.kt.WrongStep
+import tga.WrongStep
 import kotlin.math.abs
 
 data class Field(
@@ -36,20 +36,20 @@ data class Field(
 
     private fun Array<Int>.moveTo(pFrom: Pair<Int,Int>, pTo: Pair<Int,Int>) = this.apply {
         val v = pFrom.stone(this)
-        this.set(pFrom, Field.EMPTY)
+        this.set(pFrom, EMPTY)
         this.set(pTo, v)
     }
 
     private fun Array<Int>.transformToQuinnIfAny(p: Pair<Int,Int>) = this.apply {
-        if (p.first == 0 || p.first == (FIELD_SIZE-1)) {
+        if (p.first == 0 || p.first == (FIELD_SIZE -1)) {
             if (!p.isQuinn()) {
                 val stone = p.stone(this)
                 if (
-                        (stone == WHITE && p.first == (Field.FIELD_SIZE-1))
+                        (stone == WHITE && p.first == (FIELD_SIZE -1))
                         ||
                         (stone == BLACK && p.first == 0)
                 ) {
-                    this.set(p, stone + QUINN )
+                    this.set(p, stone + QUINN)
                 }
 
             }
@@ -102,8 +102,8 @@ data class Field(
             checkStartPosition(color, moves[0])
 
             val newField = when( detectStepType(moves) ) {
-                MoveType.MOVE  -> doOneMove(color, moves)
-                MoveType.SHOT  -> doShots(color, moves)
+                MoveType.MOVE -> doOneMove(color, moves)
+                MoveType.SHOT -> doShots(color, moves)
                 MoveType.QUINN -> doQuinnMoves(color, moves)
                 else -> throw WrongStep(1, "Unacceptable move to 1:${moves[1].en()} - the move type unrecognized")
             }
@@ -179,7 +179,7 @@ data class Field(
         !d.isOnField()      -> "The start position (${d.en()}) should be INSIDE the field!"
         d isNotOnDiagonal s -> "Target cell (${d.en()}) not on a diagonal"
         d distanceTo s != 1 -> "Target cell (${d.en()}) should be near the start position (${s.en()})"
-        d.stone() != EMPTY  -> "Target cell (${d.en()}) is not empty"
+        d.stone() != EMPTY -> "Target cell (${d.en()}) is not empty"
         else -> null
     }
 
@@ -255,10 +255,10 @@ data class Field(
         val enemyColor = if (ownColor == WHITE) BLACK else WHITE
 
         fun doOneQuinnMove(i: Int): Boolean {
-            if (!moves[i-1].isOnField())                 throw WrongStep(i, "The start position ${moves[i-1].en()} should be INSIDE the field!")
+            if (!moves[i-1].isOnField())                 throw WrongStep(i, "The start position ${moves[i - 1].en()} should be INSIDE the field!")
             if (!moves[i].isOnField())                   throw WrongStep(i, "The target position ${moves[i].en()} should be INSIDE the field!")
-            if ( moves[i-1] isNotOnDiagonal moves[i] )   throw WrongStep(i, "Target cell ${moves[i].en()} not on a diagonal to start ${moves[i-1].en()} cell!")
-            if ( moves[i].stone(mutableState) != EMPTY ) throw WrongStep(i, "Target cell ${moves[i].en()} is not empty")
+            if ( moves[i-1] isNotOnDiagonal moves[i] )   throw WrongStep(i, "Target cell ${moves[i].en()} not on a diagonal to start ${moves[i - 1].en()} cell!")
+            if ( moves[i].stone(mutableState) != EMPTY) throw WrongStep(i, "Target cell ${moves[i].en()} is not empty")
 
             val d = abs(moves[i] distanceTo moves[i-1])
             val direction = (moves[i] - moves[i-1]) / d
