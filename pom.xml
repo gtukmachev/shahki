@@ -11,7 +11,8 @@
     <modules>
         <module>core</module>
         <module>server</module>
-        <module>ui-application</module>
+        <module>ui-fx</module>
+        <module>ui-console</module>
     </modules>
 
     <properties>
