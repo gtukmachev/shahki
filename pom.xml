@@ -15,11 +15,7 @@
 
     <dependencies>
         <dependency> <artifactId>kotlin-stdlib-js</artifactId> <groupId>org.jetbrains.kotlin</groupId> <version>${kotlin.version}</version> </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-html-js</artifactId>
-            <version>${kotlinx.html.version}</version>
-        </dependency>
+        <dependency> <artifactId>kotlinx-html-js</artifactId> <groupId>org.jetbrains.kotlinx</groupId> <version>${kotlinx.html.version}</version> </dependency>
     </dependencies>
 
     <build>

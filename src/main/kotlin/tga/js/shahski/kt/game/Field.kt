@@ -254,7 +254,7 @@ data class Field(
         val mutableState = state.copyOf()
         val enemyColor = if (ownColor == WHITE) BLACK else WHITE
 
-        fun doOneQuinnMove(i: Int) {
+        fun doOneQuinnMove(i: Int): Boolean {
             if (!moves[i-1].isOnField())                 throw WrongStep(i, "The start position ${moves[i-1].en()} should be INSIDE the field!")
             if (!moves[i].isOnField())                   throw WrongStep(i, "The target position ${moves[i].en()} should be INSIDE the field!")
             if ( moves[i-1] isNotOnDiagonal moves[i] )   throw WrongStep(i, "Target cell ${moves[i].en()} not on a diagonal to start ${moves[i-1].en()} cell!")
@@ -283,9 +283,17 @@ data class Field(
                 mutableState.set(it, EMPTY)
             }
 
+            return enemyPosition != null
+
         }
 
-        for (i in 1 until moves.size) { doOneQuinnMove(i) }
+        var canNextMove = true
+        for (i in 1 until moves.size) {
+            if (!canNextMove) {
+                throw WrongStep(i, "you can move the quin only after a SHOT but not after a simple move!")
+            }
+            canNextMove = doOneQuinnMove(i)
+        }
 
         return this.copy(state = mutableState)
     }
