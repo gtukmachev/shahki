@@ -1,0 +1,25 @@
+.field {
+    -fx-min-height: 51;
+    -fx-min-width: 51;
+    -fx-border-radius: 0;
+    -fx-border-width: 3;
+}
+
+.field.black {
+    -fx-background-color: #855c2e;
+    -fx-border-color: #855c2e;
+}
+
+.field.white{
+    -fx-background-color: #ffe6b9;
+    -fx-border-color: #ffe6b9;
+}
+
+.field.active {
+    -fx-border-color: #4eea6f !important;
+}
+
+.field:hover {
+    -fx-border-color: #7eeadb !important;
+}
+
