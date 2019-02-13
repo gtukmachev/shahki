@@ -7,6 +7,8 @@ import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
 import javafx.stage.Stage
 import javafx.scene.layout.GridPane
+import tga.shashki.core.bots.MoviesHistoryItem
+import tga.shashki.core.game.Game
 
 
 /**
@@ -21,6 +23,11 @@ class ShashkiApp : Application() {
 
     override fun start(primaryStage: Stage) {
 
+        val game = Game(
+                maxAttempts =  3,
+                loggingCallback = { logTurn(it) }
+        )
+
 
         val grid = GridPane()
         grid.padding = Insets(BUTTON_PADDING)
@@ -30,7 +37,7 @@ class ShashkiApp : Application() {
         for (r in 0 until NUM_BUTTON_LINES) {
             for (c in 0 until BUTTONS_PER_LINE) {
                 val number = r + c
-                val button = Button(number.toString()).apply {
+                val button = Button(  ).apply {
                     styleClass.add("field")
                     styleClass.add( if (number % 2 == 0) "white" else "black" )
                     setOnAction {
@@ -57,4 +64,8 @@ class ShashkiApp : Application() {
         }
     }
 
+}
+
+fun logTurn(turn: MoviesHistoryItem) {
+    println(turn)
 }

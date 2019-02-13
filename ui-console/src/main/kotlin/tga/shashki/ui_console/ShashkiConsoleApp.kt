@@ -44,34 +44,46 @@ fun convertCommandToMoves(command: String): Moves = command.split(" ").map {
 
 fun printGame(game: Game) {
 
-    print("  ")
-    for (c in 0 until Field.FIELD_SIZE ) {
-        print("  ${c+1} ")
+    fun printLettersLine() {
+        print("  ")
+        for (c in 0 until Field.FIELD_SIZE ) {
+            print("  ${'A' + c} ")
+        }
+        println("")
     }
-    println("")
 
+    fun printSeparatorLine(startSymbol: Char = '├', midSymbol: Char = '┼', endSymbol: Char = '┤') {
+        println("  ${startSymbol}───" + ("${midSymbol}───".repeat(Field.FIELD_SIZE-1)) + endSymbol)
+    }
+
+    printLettersLine()
+    printSeparatorLine('┌', '┬', '┐')
+
+    var row = Field.FIELD_SIZE
 
     for (l in 0 until Field.FIELD_SIZE ) {
 
+        row--
 
-        println("  " + ("+---".repeat(Field.FIELD_SIZE)) + "+")
-        print("${l+1} ")
+        if (l > 0) printSeparatorLine()
+        print("${row+1} ")
 
         for (c in 0 until Field.FIELD_SIZE) {
 
-            val st = game.field.getStone(l,c)
+            val st = game.field.getStone(row,c)
             when {
-                (st and Field.BLACK and Field.QUINN) > 0 -> print("|(*)")
-                (st and Field.BLACK                ) > 0 -> print("| * ")
-                (st and Field.WHITE and Field.QUINN) > 0 -> print("|(o)")
-                (st and Field.WHITE                ) > 0 -> print("| o ")
-                                                    else -> print("|   ")
+                (st and Field.BLACK and Field.QUINN) > 0 -> print("│(*)")
+                (st and Field.BLACK                ) > 0 -> print("│ * ")
+                (st and Field.WHITE and Field.QUINN) > 0 -> print("│(o)")
+                (st and Field.WHITE                ) > 0 -> print("│ o ")
+                                                    else -> print("│   ")
             }
 
         }
-        println("|")
+        println("│ ${row+1}")
     }
-    println("  " + ("+---".repeat(Field.FIELD_SIZE)) + "+")
+    printSeparatorLine('└', '┴', '┘')
+    printLettersLine()
 
     print(game.status)
 }

@@ -11,5 +11,13 @@
 
     <artifactId>ui-application</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>tga.shashki</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 
 </project>
