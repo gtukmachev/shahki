@@ -1,5 +1,6 @@
 package tga.shashki.ui_console
 
+import tga.shashki.core.bots.DevBot
 import tga.shashki.core.bots.MoviesHistoryItem
 import tga.shashki.core.game.Field
 import tga.shashki.core.game.Game
@@ -9,40 +10,51 @@ import tga.shashki.core.game.Moves
  * Created by grigory@clearscale.net on 2/11/2019.
  */
 
+val game = Game(
+        whiteBot =  DevBot(),
+        blackBot = DevBot(),
+        maxAttempts =  3,
+        loggingCallback = { logTurn(it) }
+)
+
+
 fun main(args: Array<String>) {
 
-    val game = Game(
-                maxAttempts =  3,
-                loggingCallback = { logTurn(it) }
-            )
 
     println("Game started")
 
     while (game.status == "in progress") {
 
-        printGame(game)
+        printGame()
 
         val command: String = readCommand()
         if (command == "exit") break
 
         val moves: Moves = convertCommandToMoves(command)
 
-        game.currentBot.force(moves)
+        (game.currentBot as DevBot).force(moves)
         game.turn()
 
 
     }
 
-    printGame(game)
+    printGame()
 
     println("Game over")
 }
 
 fun convertCommandToMoves(command: String): Moves = command.split(" ").map {
-    (it[0]-'1') to (it[1]-'1')
+        (
+            when (it[0]) {
+                in 'a'..'h' -> it[0] - 'a'
+                in 'A'..'H' -> it[0] - 'A'
+                in '1'..'8' -> it[0] - '1'
+                       else -> throw RuntimeException("wrong input format")
+            }
+        ) to (it[1]-'1')
 }
 
-fun printGame(game: Game) {
+fun printGame() {
 
     fun printLettersLine() {
         print("  ")
@@ -84,13 +96,27 @@ fun printGame(game: Game) {
     }
     printSeparatorLine('└', '┴', '┘')
     printLettersLine()
-
-    print(game.status)
 }
 
 fun readCommand(): String {
+
+    print(game.status)
+    print(" | ")
+    print( when (game.currentBot.color){
+        Field.WHITE -> "white"
+        Field.BLACK -> "black"
+               else -> "unknown color"
+    })
+
+    print("[attempt ${game.attempt+1}/${game.maxAttempts}]")
+
     print(">")
-    return readLine() ?: "exit"
+    val cmd = (readLine() ?: "exit").trim()
+
+    return when(cmd) {
+        "", "e", "E", "x", "X", "q", "Q" -> "exit"
+        else -> cmd
+    }
 }
 
 

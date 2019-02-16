@@ -1,11 +1,13 @@
 package tga.shashki.core.game
 
 import tga.shashki.core.bots.Bot
-import tga.shashki.core.bots.RandomBot
+import tga.shashki.core.bots.DevBot
 import tga.shashki.core.bots.MoviesHistoryItem
 
 class Game(
-        private val maxAttempts: Int,
+        private val whiteBot: Bot,
+        private val blackBot: Bot,
+        val maxAttempts: Int,
         private val loggingCallback: (MoviesHistoryItem) -> Unit
 ) {
 
@@ -13,17 +15,16 @@ class Game(
 
     var status: String = "in progress"
 
-    val blackBot: Bot = RandomBot().apply { color = Field.BLACK }
-    val whiteBot: Bot = RandomBot().apply { color = Field.WHITE }
-
     var moviesHistory: List<MoviesHistoryItem> = listOf()
     var fieldHistory: List<Field> = listOf(field)
 
-    var currentBot = whiteBot
-    var otherBot = blackBot
+    var currentBot = whiteBot.apply { color = Field.WHITE }
+    var otherBot = blackBot.apply { color = Field.BLACK }
 
     var nStep = 0
-    var nAttempt = 0
+
+    private var nAttempt = 0
+    val attempt: Int get() = nAttempt
 
 
     fun turn() {

@@ -7,6 +7,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
 import javafx.stage.Stage
 import javafx.scene.layout.GridPane
+import tga.shashki.core.bots.DevBot
 import tga.shashki.core.bots.MoviesHistoryItem
 import tga.shashki.core.game.Game
 
@@ -24,6 +25,8 @@ class ShashkiApp : Application() {
     override fun start(primaryStage: Stage) {
 
         val game = Game(
+                whiteBot =  DevBot(),
+                blackBot = DevBot(),
                 maxAttempts =  3,
                 loggingCallback = { logTurn(it) }
         )

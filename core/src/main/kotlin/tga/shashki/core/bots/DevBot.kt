@@ -6,7 +6,7 @@ import tga.shashki.core.game.Moves
 /**
  * Created by grigory@clearscale.net on 7/22/2018.
  */
-class RandomBot: Bot {
+class DevBot: Bot {
 
     private var colorVal: Int = -1
     private var focedMoves: Moves? = null
@@ -24,7 +24,13 @@ class RandomBot: Bot {
         println("$color: I'm loose ;-(")
     }
 
-    override fun force(moves: Moves) {
+    /**
+     * The function used for testing only
+     *
+     * @param moves After the function called - the bot HAVE TO return exactly this moves
+     *              in the next invocation of the getMoves() function
+     */
+    fun force(moves: Moves) {
         focedMoves = moves
     }
 

@@ -42,14 +42,6 @@ interface Bot {
      */
     fun loose(field: Field, stepsHistory: List<MoviesHistoryItem>, fieldsHistory: List<Field>)
 
-    /**
-     * The function used for testing only
-     *
-     * @param moves After the function called - the bot HAVE TO return exactly this moves
-     *              in the next invocation of the getMoves() function
-     */
-    fun force(moves: Moves)
-
 }
 
 
