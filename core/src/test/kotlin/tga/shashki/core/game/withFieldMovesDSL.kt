@@ -19,4 +19,9 @@ interface withFieldMovesDSL {
         fail("game response should be 'Done'")
     }
 
+    fun Field.MoveResponse.expectErrResult() : Field.Err {
+        if (this is Field.Err) return this
+        fail("game response should be 'Err'")
+    }
+
 }

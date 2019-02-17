@@ -14,11 +14,17 @@ class CheckTests : withFieldMovesDSL, withFieldAssertsDSL {
     }
 
 
-    @Test fun t1() {
+    @Test fun white_B3_A4_should_move_OK() {
         field.white("B3 A4")
             .expectDoneResult()
             .withEmptyOn("B3")
             .withWhiteOn("A4")
+
+    }
+
+    @Test fun white_B4_A4_should_fails() {
+        field.white("B4 A4")
+            .expectErrResult()
 
     }
 
