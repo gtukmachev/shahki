@@ -44,14 +44,13 @@ fun main(args: Array<String>) {
 }
 
 fun convertCommandToMoves(command: String): Moves = command.split(" ").map {
-        (
-            when (it[0]) {
+        ( (it[1]-'1') to when (it[0]) {
                 in 'a'..'h' -> it[0] - 'a'
                 in 'A'..'H' -> it[0] - 'A'
                 in '1'..'8' -> it[0] - '1'
                        else -> throw RuntimeException("wrong input format")
             }
-        ) to (it[1]-'1')
+        )
 }
 
 fun printGame() {
