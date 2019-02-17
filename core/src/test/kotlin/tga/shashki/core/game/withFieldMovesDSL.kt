@@ -24,4 +24,10 @@ interface withFieldMovesDSL {
         fail("game response should be 'Err'")
     }
 
+    fun Field.Err.withErrorOnStepNumber(stepNumber: Int) {
+        if (this.exception.message?.endsWith("[step ${stepNumber-1}]") != true) {
+            fail("An error is expected on move #$stepNumber")
+        }
+    }
+
 }

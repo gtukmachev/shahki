@@ -22,9 +22,10 @@ class CheckTests : withFieldMovesDSL, withFieldAssertsDSL {
 
     }
 
-    @Test fun white_B4_A4_should_fails() {
+    @Test fun white_B4_A4_should_fails_on_first_move() {
         field.white("B4 A4")
-            .expectErrResult()
+                .expectErrResult()
+                .withErrorOnStepNumber(1)
 
     }
 
