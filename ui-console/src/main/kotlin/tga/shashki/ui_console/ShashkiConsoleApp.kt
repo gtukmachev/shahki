@@ -18,23 +18,23 @@ val game = Game(
 )
 
 
-fun main(args: Array<String>) {
+fun main() {
 
 
     println("Game started")
+    var gameIsOn = true
 
-    while (game.status == "in progress") {
+    while (gameIsOn && game.status == "in progress") {
 
         printGame()
 
-        val command: String = readCommand()
-        if (command == "exit") break
-
-        val moves: Moves = convertCommandToMoves(command)
-
-        (game.currentBot as DevBot).force(moves)
-        game.turn()
-
+        when (val command = readCommand()) {
+            "exit" -> gameIsOn = false
+              else -> {
+                  (game.currentBot as DevBot).force(command)
+                  game.turn()
+              }
+        }
 
     }
 
@@ -43,15 +43,6 @@ fun main(args: Array<String>) {
     println("Game over")
 }
 
-fun convertCommandToMoves(command: String): Moves = command.split(" ").map {
-        ( (it[1]-'1') to when (it[0]) {
-                in 'a'..'h' -> it[0] - 'a'
-                in 'A'..'H' -> it[0] - 'A'
-                in '1'..'8' -> it[0] - '1'
-                       else -> throw RuntimeException("wrong input format")
-            }
-        )
-}
 
 fun printGame() {
 

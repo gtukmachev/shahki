@@ -30,8 +30,18 @@ class DevBot: Bot {
      * @param moves After the function called - the bot HAVE TO return exactly this moves
      *              in the next invocation of the getMoves() function
      */
-    fun force(moves: Moves) {
-        focedMoves = moves
+    fun force(command: String) {
+        focedMoves = convertCommandToMoves(command)
+    }
+
+    fun convertCommandToMoves(command: String): Moves = command.split(" ").map {
+        ( (it[1]-'1') to when (it[0]) {
+            in 'a'..'h' -> it[0] - 'a'
+            in 'A'..'H' -> it[0] - 'A'
+            in '1'..'8' -> it[0] - '1'
+            else -> throw RuntimeException("wrong input format")
+        }
+                )
     }
 
     override fun getMoves(nStep: Int, nAttempt: Int, field: Field, stepsHistory: List<MoviesHistoryItem>,
