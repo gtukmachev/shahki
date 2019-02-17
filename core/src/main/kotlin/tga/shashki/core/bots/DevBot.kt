@@ -1,5 +1,6 @@
 package tga.shashki.core.bots
 
+import tga.shashki.core.bots.Converters.convertCommandToMoves
 import tga.shashki.core.game.Field
 import tga.shashki.core.game.Moves
 
@@ -32,16 +33,6 @@ class DevBot: Bot {
      */
     fun force(command: String) {
         focedMoves = convertCommandToMoves(command)
-    }
-
-    fun convertCommandToMoves(command: String): Moves = command.split(" ").map {
-        ( (it[1]-'1') to when (it[0]) {
-            in 'a'..'h' -> it[0] - 'a'
-            in 'A'..'H' -> it[0] - 'A'
-            in '1'..'8' -> it[0] - '1'
-            else -> throw RuntimeException("wrong input format")
-        }
-                )
     }
 
     override fun getMoves(nStep: Int, nAttempt: Int, field: Field, stepsHistory: List<MoviesHistoryItem>,
